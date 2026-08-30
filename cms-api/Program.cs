@@ -4,6 +4,7 @@ using cms_api.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.WebHost.UseUrls("http://0.0.0.0:5030");
 
 // Add services
 builder.Services.AddOpenApi();
@@ -181,3 +182,4 @@ app.MapGet("/api/categories", () => Results.Ok(new[]
 app.Run();
 
 public record RevalidateRequest(string Tag);
+

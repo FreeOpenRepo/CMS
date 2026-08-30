@@ -1,3 +1,4 @@
+import { showSuccess, showError, showInfo, showWarning, showConfirm } from '@/lib/swal';
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -43,7 +44,7 @@ export default function EditorView() {
       await loadReviewQueue();
       confetti({ particleCount: 70, spread: 80, origin: { y: 0.6 } });
     } catch (err: any) {
-      alert('Publishing rejected: ' + err.message);
+      showInfo('แจ้งเตือนระบบ', 'Publishing rejected: ' + err.message);
     } finally {
       setIsPublishing(false);
     }
@@ -234,3 +235,4 @@ export default function EditorView() {
     </div>
   );
 }
+

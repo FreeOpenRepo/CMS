@@ -1,3 +1,4 @@
+import { showSuccess, showError, showInfo, showWarning, showConfirm } from '@/lib/swal';
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -82,7 +83,7 @@ export default function AuthorView() {
       await loadDrafts();
       confetti({ particleCount: 40, spread: 60 });
     } catch (err: any) {
-      alert('Submit failed: ' + err.message);
+      showInfo('แจ้งเตือนระบบ', 'Submit failed: ' + err.message);
     }
   }
 
@@ -326,3 +327,4 @@ export default function AuthorView() {
     </div>
   );
 }
+

@@ -1,5 +1,6 @@
-import { showSuccess, showError, showInfo, showWarning, showยืนยัน } from '@/lib/swal';
 'use client';
+
+import { showSuccess, showError, showInfo, showWarning, showConfirm } from '@/lib/swal';
 
 import React, { useState, useEffect } from 'react';
 import { Article } from '@/lib/types';
@@ -235,5 +236,6 @@ export default function EditorView() {
     </div>
   );
 }
+
 
 

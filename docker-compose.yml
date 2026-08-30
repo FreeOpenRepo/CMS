@@ -30,7 +30,8 @@ services:
       - "5030:5030"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://+:5030
+      - ASPNETCORE_URLS=http://0.0.0.0:5030
+      - ASPNETCORE_HTTP_PORTS=5030
       - ConnectionStrings__PostgresConnection=Host=cms-db;Port=5432;Database=cms_db;Username=postgres;Password=postgres
     depends_on:
       cms-db:
@@ -60,6 +61,7 @@ volumes:
 networks:
   cms-network:
     driver: bridge
+
 
 
 

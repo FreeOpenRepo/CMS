@@ -1,4 +1,4 @@
-import { showSuccess, showError, showInfo, showWarning, showConfirm } from '@/lib/swal';
+import { showSuccess, showError, showInfo, showWarning, showยืนยัน } from '@/lib/swal';
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -129,10 +129,10 @@ export default function EditorView() {
             </div>
           </div>
 
-          {/* Published Articles */}
+          {/* บทความที่เผยแพร่แล้ว */}
           <div className="glass-panel" style={{ padding: '20px' }}>
             <h2 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '14px' }}>
-              Published Articles ({publishedList.length})
+              บทความที่เผยแพร่แล้ว ({publishedList.length})
             </h2>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', maxHeight: '300px', overflowY: 'auto' }}>
@@ -235,4 +235,5 @@ export default function EditorView() {
     </div>
   );
 }
+
 

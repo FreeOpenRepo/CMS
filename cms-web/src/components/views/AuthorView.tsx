@@ -1,4 +1,4 @@
-import { showSuccess, showError, showInfo, showWarning, showConfirm } from '@/lib/swal';
+import { showSuccess, showError, showInfo, showWarning, showยืนยัน } from '@/lib/swal';
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -327,4 +327,5 @@ export default function AuthorView() {
     </div>
   );
 }
+
 

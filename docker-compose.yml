@@ -1,0 +1,33 @@
+services:
+  cms-api:
+    build:
+      context: ./cms-api
+      dockerfile: Dockerfile
+    container_name: cms-api
+    ports:
+      - "5030:5030"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:5030
+    restart: unless-stopped
+    networks:
+      - cms-network
+
+  cms-web:
+    build:
+      context: ./cms-web
+      dockerfile: Dockerfile
+    container_name: cms-web
+    ports:
+      - "3003:3003"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:5030
+    depends_on:
+      - cms-api
+    restart: unless-stopped
+    networks:
+      - cms-network
+
+networks:
+  cms-network:
+    driver: bridge

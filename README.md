@@ -28,6 +28,62 @@ flowchart TD
 
 ---
 
+## 🗄️ Database Design & Entity Relationships (PostgreSQL 18)
+
+### 1. Entity-Relationship Diagram (ER Diagram)
+
+```mermaid
+erDiagram
+    Categories ||--o{ Articles : "contains published articles"
+    Articles ||--o{ MediaAssets : "embeds uploaded media"
+
+    Categories {
+        int Id PK
+        string Name
+        string Slug UK
+        string Description
+    }
+
+    Articles {
+        int Id PK
+        string Title
+        string Slug UK
+        string Content
+        string Excerpt
+        string Status
+        int CategoryId FK
+        string CoverImageUrl
+        timestamp PublishedAt
+        timestamp CreatedAt
+        timestamp UpdatedAt
+    }
+
+    MediaAssets {
+        int Id PK
+        string FileName
+        string ContentType
+        bigint Size
+        string WebpUrl
+        int Width
+        int Height
+        timestamp UploadedAt
+    }
+```
+
+### 2. รายละเอียดตารางและความสัมพันธ์ (Schema & Relationships)
+- **`Categories` (หมวดหมู่เนื้อหา)**:
+  - จัดเก็บหมวดหมู่บทความ (เช่น Cloud Architecture, DevOps, Security) พร้อม URL Slug ที่ไม่ซ้ำกัน
+  - ความสัมพันธ์: `1 Category` เชื่อมโยงไปยัง `N Articles`
+- **`Articles` (บทความและสิ่งพิมพ์)**:
+  - Foreign Key: `CategoryId` ➔ `Categories(Id)`
+  - บันทึกสถานะบทความ (`DRAFT`, `IN_REVIEW`, `PUBLISHED`, `ARCHIVED`), เนื้อหา HTML/Markdown จาก WYSIWYG, ภาพปก และเวลาเผยแพร่
+  - บังคับใช้ Invariant `UniqueArticleSlug` (Slug ต้องไม่ซ้ำ) และ Invariant `PublishedRequiresCoverImage` (ต้องมี `CoverImageUrl` เมื่อสถานะเป็น `PUBLISHED`)
+  - มี PostgreSQL GIN Index บน `to_tsvector('english', Title || ' ' || Content)` สำหรับ Full-Text Search
+- **`MediaAssets` (คลังรูปภาพและไฟล์สื่อ)**:
+  - จัดเก็บรูปภาพที่ผ่านการแปลงและบีบอัดเป็น Next-Gen WebP อัตโนมัติด้วย SixLabors.ImageSharp พร้อมขนาดกว้างxสูง
+
+---
+
 ## 🛡️ กฎเหล็กของระบบ (Domain Invariants)
 
 1. **`UniqueArticleSlug` (URL Slug ต้องไม่ซ้ำกันเด็ดขาด)**:
@@ -41,6 +97,7 @@ flowchart TD
 
 | ส่วนประกอบ | เทคโนโลยีที่เลือก | เหตุผลที่เลือก | ข้อดีหลัก (Advantages) |
 |---|---|---|---|
+| **Database** | **PostgreSQL 18** | มี Full-Text Search (tsvector) และ JSONB ในตัว | ค้นหาบทความรวดเร็ว จัดเก็บข้อมูลยืดหยุ่น พร้อม `db/init.sql` |
 | **Frontend UI** | **Next.js 16 (PPR & ISR)** | รองรับ Partial Prerendering และ On-Demand Incremental Static Regeneration | เนื้อหาโหลดได้เร็วระดับ Static Page แต่ยังสามารถอัปเดตแบบ Dynamic ได้ทันที |
 | **Rich-Text Editor** | **@tiptap/react** | Headless WYSIWYG Editor ไร้ข้อจำกัดเรื่อง Styling | จัดการเนื้อหาแบบบล็อก (Headings, Code, Tables, Images) ได้อย่างยืดหยุ่น |
 | **SEO Optimizer** | **next-seo** | จัดการ Meta Tags, OpenGraph, และ JSON-LD Structured Data อัตโนมัติ | เพิ่มคะแนน Core Web Vitals และการติดอันดับบน Google Search |
@@ -50,6 +107,24 @@ flowchart TD
 
 ---
 
-## 🚀 สรุปสถาปัตยกรรม (Architecture Highlights)
+## 🚀 วิธีการรันระบบ (Quick Start)
 
-- **Static at the Edge, Dynamic at the Core**: ให้ความเร็วในการเปิดหน้าเว็บเทียบเท่า Static HTML แต่สามารถแก้ไขและเผยแพร่เนื้อหาใหม่ได้ทันทีผ่านระบบ On-Demand Revalidation
+### ตัวเลือกที่ 1: รันด้วย Docker Compose (แนะนำ)
+```bash
+docker compose up --build -d
+```
+> ระบบจะรัน **PostgreSQL 18** (`:5432`), **.NET 10 API** (`:5030`), และ **Next.js 16 Web** (`:3003`) พร้อม Seed หมวดหมู่และบทความตัวอย่างทันที
+
+### ตัวเลือกที่ 2: รันแบบแยก Service (Manual)
+1. **รัน Backend API**:
+   ```powershell
+   cd cms-api
+   dotnet run
+   ```
+   > API พร้อมทำงานที่: `http://localhost:5030`
+2. **รัน Frontend Web**:
+   ```powershell
+   cd cms-web
+   bun run dev
+   ```
+   > เข้าใช้งานได้ที่: `http://localhost:3003`

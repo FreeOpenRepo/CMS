@@ -1,4 +1,25 @@
 services:
+  cms-db:
+    image: postgres:18-alpine
+    container_name: cms-db
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=cms_db
+    ports:
+      - "5435:5432"
+    volumes:
+      - cms_postgres_data:/var/lib/postgresql/data
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d cms_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - cms-network
+
   cms-api:
     build:
       context: ./cms-api
@@ -9,6 +30,10 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:5030
+      - ConnectionStrings__PostgresConnection=Host=cms-db;Port=5432;Database=cms_db;Username=postgres;Password=postgres
+    depends_on:
+      cms-db:
+        condition: service_healthy
     restart: unless-stopped
     networks:
       - cms-network
@@ -27,6 +52,9 @@ services:
     restart: unless-stopped
     networks:
       - cms-network
+
+volumes:
+  cms_postgres_data:
 
 networks:
   cms-network:
